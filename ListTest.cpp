@@ -21,6 +21,49 @@ class List final
 				delete mNextNode;
 		}
 	};
+public:
+	//반복자iterator 구현 
+	//&참조자, *포인터 차이
+	//1. 내부 데이터 요소를 가저올 수 있어야 한다.
+	//2. 내부 데이터 요소를 수정할 수 있어야 한다.
+	//3. 다음 데이터로 넘어갈 수 있어야 한다.
+	//4. 이전 데이터로 넘어갈 수 있어야 한다.
+	class Iterator final
+	{
+	private:
+		friend class List;//friend : 클래스에 접근할수 있게 해주는 애
+		Node* mCurrentNode;
+	public:
+		Iterator() : mCurrentNode(nullptr) {}
+		//연산자 재정의========================
+		Iterator& operator++()
+		{
+			mCurrentNode = mCurrentNode->mNextNode;
+			return *this;
+		}
+		//=====================================
+		Iterator& operator--()
+		{
+			mCurrentNode = mCurrentNode->mPrevNode;
+			return *this;
+		}
+		//=====================================
+		T& operator*()
+		{
+			return mCurrentNode->mData;
+		}
+		//=====================================
+		bool operator==(const Iterator& iter)
+		{
+			return mCurrentNode == iter.mCurrentNode;
+		}
+		//=====================================
+		bool operator!=(const Iterator& iter)
+		{
+			return mCurrentNode != iter.mCurrentNode;
+		}
+
+	};
 private:
 	Node* mRoot;//첫번째 노드
 public:
@@ -65,8 +108,20 @@ public:
 			temp = temp->mNextNode;
 		}
 	}
-};
+	Iterator Begin()
+	{
+		Iterator iter;
+		iter.mCurrentNode = mRoot;
+		return iter;
+	}
 
+	Iterator End()
+	{
+		Iterator iter;
+		iter.mCurrentNode = nullptr;
+		return iter;
+	}
+};
 
 int main()
 {
@@ -75,5 +130,13 @@ int main()
 	{
 		list.Push_Back(i);
 	}
-	list.Print();
+	//함수를 이용한 출력
+	//list.Print();
+
+	//이터레이터를 이용한 출력
+	List<int>::Iterator iter = list.Begin();
+	for (; iter != list.End(); ++iter)
+	{
+		cout << *iter << endl;
+	}
 }
